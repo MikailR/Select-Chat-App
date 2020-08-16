@@ -6,7 +6,7 @@
   "dependencies": {
     "antd": "^3.20.7",
     "express": "^4.17.1",
-    "ngrok": "^3.1.1",
+    "ngrok": "^3.2.7",
     "node-sass": "^4.12.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
@@ -19,7 +19,8 @@
     "twilio-chat": "^3.3.1"
   },
   "devDependencies": {
-    "concurrently": "^3.6.1"
+    "concurrently": "^3.6.1",
+    "nodemon": "^2.0.4"
   },
   "scripts": {
     "start": "concurrently \"react-scripts start\" \"node index.js\"",
@@ -35,5 +36,18 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "description": "This is a lightweight application based on [Twilio Chat](https://www.twilio.com/docs/chat).",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MikailR/Select-Chat-App.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MikailR/Select-Chat-App/issues"
+  },
+  "homepage": "https://github.com/MikailR/Select-Chat-App#readme"
 }

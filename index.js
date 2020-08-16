@@ -38,7 +38,7 @@ let client = new twilio(config.twilio.accountSid, config.twilio.authToken);
 app.post('/chat', (req, res) => {
   console.log("Received a webhook:", req.body);
   if (req.body.EventType === 'onConversationAdded') {
-    const me = "Tackleton";
+    const me = "Select";
     client.conversations.v1.conversations(req.body.ConversationSid)
       .participants
       .create({
@@ -57,6 +57,19 @@ app.post('/outbound-status', (req, res) => {
   res.sendStatus(200);
 })
 
+app.get('/mailchimp', (req, res) => {
+  console.log("Received Mailchimp webhook: ", req.body);
+  res.send("Hello World");
+})
+
+app.post('/mailchimp', (req, res) => {
+  console.log("Received Mailchimp webhook: ", req.body);
+  res.send(JSON.stringify(req.body));
+  console.log(req.body.data.merges.FNAME + " " + req.body.data.merges.LNAME);
+  // res.sendStatus(200);
+})
+
+
 
 var ngrokOptions = {
   proto: 'http',
@@ -67,6 +80,6 @@ if (config.ngrokSubdomain) {
   ngrokOptions.subdomain = config.ngrokSubdomain
 }
 
-ngrok.connect(ngrokOptions).then(url => {
-  console.log('ngrok url is ' + url);
-}).catch(console.error);
+// ngrok.connect(ngrokOptions).then(url => {
+//   console.log('ngrok url is ' + url);
+// }).catch(console.error);
