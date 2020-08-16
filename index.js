@@ -62,13 +62,50 @@ app.get('/mailchimp', (req, res) => {
   res.send("Hello World");
 })
 
+//When MC gets a new subscriber
 app.post('/mailchimp', (req, res) => {
   console.log("Received Mailchimp webhook: ", req.body);
-  res.send(JSON.stringify(req.body));
-  console.log(req.body.data.merges.FNAME + " " + req.body.data.merges.LNAME);
-  // res.sendStatus(200);
+  // console.log(req.body.data.merges.PHONE);
+  const me = "Select";
+  var subscriber_name = req.body.data.merges.FNAME + " " + req.body.data.merges.LNAME;
+  // console.log(subscriber_name);
+  // Create Conversation
+  client.conversations.conversations
+      .create({
+         messagingServiceSid: config.twilio.messagingServiceSid,
+         friendlyName: subscriber_name
+       })
+       //Create Participant for New Subscriber and Add to Convo
+      .then(conversation => {
+        console.log(conversation);
+        client.conversations.conversations(conversation.sid)
+          .participants
+          .create({
+              'messagingBinding.address': `${req.body.data.merges.PHONE}`,
+              'messagingBinding.proxyAddress': config.twilio.proxy
+            })
+          //Add "Select" Identity
+          .then(participant => {
+            console.log(participant);
+            client.conversations.conversations(conversation.sid).participants
+            .create({
+              identity: me
+            })
+            //Send 1st Message
+            .then(participant => {
+              console.log(`Added ${participant.identity} to ${conversation.sid}.`);
+              client.conversations.conversations(conversation.sid)
+                    .messages
+                    .create({author: me, body: 'Hey, this is Kumar Mahaboob'})
+                    .then(message => console.log(message.sid))
+                    .catch(e => console.log(e));
+            })
+            .catch(err => console.error(`Failed to add a member to ${req.body.ConversationSid}!`, err));
+          })
+          .catch(e => console.log(e));
+      });
+  res.sendStatus(200);
 })
-
 
 
 var ngrokOptions = {
