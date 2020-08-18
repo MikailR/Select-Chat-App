@@ -4,8 +4,10 @@
   "private": true,
   "proxy": "http://localhost:3001",
   "dependencies": {
+    "@mailchimp/mailchimp_marketing": "^3.0.12",
     "antd": "^3.20.7",
     "express": "^4.17.1",
+    "mailchimp": "^1.2.1",
     "ngrok": "^3.2.7",
     "node-sass": "^4.12.0",
     "prop-types": "^15.7.2",

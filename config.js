@@ -12,6 +12,10 @@ module.exports = {
     messagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID,
     proxy: '+12262405234'
   },
+  mailchimp: {
+    apiKey: process.env.MAILCHIMP_API_KEY,
+    serverPrefix: process.env.MAILCHIMP_SERVER_PREFIX
+  },
   port: process.env.PORT || 3001,
   // ngrokSubdomain: 'ajtack'
 }
