@@ -3,6 +3,8 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const twilio     = require('twilio');
 const ngrok      = require('ngrok');
+//Express Async Handler
+const ash = require("express-async-handler");
 //Require and Configure Mailchimp API
 const mailchimp  = require('@mailchimp/mailchimp_marketing');
 mailchimp.setConfig({
@@ -69,53 +71,69 @@ app.get('/mailchimp', (req, res) => {
 })
 
 //When MC gets a new subscriber
-app.post('/mailchimp', (req, res) => {
-  console.log("Received Mailchimp webhook: ", req.body);
+app.post('/mailchimp', ash(async (req, res) => {
+  // console.log("Received Mailchimp webhook: ", req.body);
   const me = "Select";
-  const run = async () => {
-    const response = await mailchimp.lists.getList(req.body.data.list_id);
-    console.log(response.name);
-  };
-  
-  run();
-  var subscriber_name = req.body.data.merges.FNAME + " " + req.body.data.merges.LNAME;
+  // Return the List Name based on which audience subscriber came from
+  const getListName = async () => {
+    result = await mailchimp.lists.getList(req.body.data.list_id);
+    return result.name;
+  } 
+  let audience = await getListName();
+  // Get a list of active Twilio numbers to create conversation
+  const getPhoneNums = async () => {
+    result = await client.incomingPhoneNumbers.list();
+    ph_nums = [];
+    result.forEach((ph_num) => {
+      if(ph_num.friendlyName === audience) {
+          ph_nums.push({
+            name: ph_num.friendlyName,
+            number: ph_num.phoneNumber
+          });
+        }
+    });
+    return ph_nums;
+  }
+  //Return matching Twilio number (proxybindingaddress)
+  let subscriber = await getPhoneNums();
+  console.log(subscriber[0].number);
   // Create Conversation
-  // client.conversations.conversations
-  //     .create({
-  //        messagingServiceSid: config.twilio.messagingServiceSid,
-  //        friendlyName: subscriber_name
-  //      })
-  //      //Create Participant for New Subscriber and Add to Convo
-  //     .then(conversation => {
-  //       console.log(conversation);
-  //       client.conversations.conversations(conversation.sid)
-  //         .participants
-  //         .create({
-  //             'messagingBinding.address': `${req.body.data.merges.PHONE}`,
-  //             'messagingBinding.proxyAddress': config.twilio.proxy
-  //           })
-  //         //Add "Select" Identity
-  //         .then(participant => {
-  //           console.log(participant);
-  //           client.conversations.conversations(conversation.sid).participants
-  //           .create({
-  //             identity: me
-  //           })
-  //           //Send 1st Message
-  //           .then(participant => {
-  //             console.log(`Added ${participant.identity} to ${conversation.sid}.`);
-  //             client.conversations.conversations(conversation.sid)
-  //                   .messages
-  //                   .create({author: me, body: 'Hey, this is Kumar Mahaboob'})
-  //                   .then(message => console.log(message.sid))
-  //                   .catch(e => console.log(e));
-  //           })
-  //           .catch(err => console.error(`Failed to add a member to ${req.body.ConversationSid}!`, err));
-  //         })
-  //         .catch(e => console.log(e));
-  //     });
+  client.conversations.conversations
+      .create({
+         messagingServiceSid: config.twilio.messagingServiceSid,
+         friendlyName: audience + " - " + req.body.data.merges.FNAME + " " + req.body.data.merges.LNAME
+       })
+       //Create Participant for New Subscriber and Add to Convo
+      .then(conversation => {
+        // console.log(conversation);
+        client.conversations.conversations(conversation.sid)
+          .participants
+          .create({
+              'messagingBinding.address': `${req.body.data.merges.PHONE}`,
+              'messagingBinding.proxyAddress': `${subscriber[0].number}`
+            })
+          //Add "Select" Identity
+          .then(participant => {
+            console.log(participant);
+            client.conversations.conversations(conversation.sid).participants
+            .create({
+              identity: me
+            })
+            //Send 1st Message
+            .then(participant => {
+              console.log(`Added ${participant.identity} to ${conversation.sid}.`);
+              client.conversations.conversations(conversation.sid)
+                    .messages
+                    .create({author: me, body: 'Hey, this is a test message'})
+                    .then(message => console.log(message.sid))
+                    .catch(e => console.log(e));
+            })
+            .catch(err => console.error(`Failed to add a member to ${req.body.ConversationSid}!`, err));
+          })
+          .catch(e => console.log(e));
+      });
   res.sendStatus(200);
-})
+}))
 
 
 var ngrokOptions = {
