@@ -9,8 +9,7 @@ module.exports = {
     apiKey: process.env.TWILIO_API_KEY,
     apiSecret: process.env.TWILIO_API_SECRET,
     chatServiceSid: process.env.TWILIO_CHAT_SERVICE_SID,
-    messagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID,
-    proxy: '+12262405234'
+    messagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID
   },
   mailchimp: {
     apiKey: process.env.MAILCHIMP_API_KEY,

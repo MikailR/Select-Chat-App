@@ -66,10 +66,24 @@ class ChatApp extends React.Component {
     this.chatClient.shutdown();
   };
 
-  getToken = () => {
+  getToken = async () => {
     // Paste your unique Chat token function
-    const myToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzg1MThiMDA1ZDQ2NzBjZTkxYzVmNjYyYjU1ZTA3MzdiLTE1OTc3OTkyOTUiLCJncmFudHMiOnsiaWRlbnRpdHkiOiJTZWxlY3QiLCJjaGF0Ijp7InNlcnZpY2Vfc2lkIjoiSVM2YzVjZGJhYmQ4ODI0ZTA1YmViNTA5ZTVjNTc4NjM2ZCJ9fSwiaWF0IjoxNTk3Nzk5Mjk1LCJleHAiOjE1OTc4MDI4OTUsImlzcyI6IlNLODUxOGIwMDVkNDY3MGNlOTFjNWY2NjJiNTVlMDczN2IiLCJzdWIiOiJBQzhlNjkxOTliZTQ2Yjk2YjdlYzBhNmZmMjYzYzVmZmM0In0.bbyfECn1qRQ0tNcpjJ4YRLXDFcx_G3O9ihncr6Tfurg';
-    this.setState({token: myToken}, this.initChat);
+    let identity = {"name": this.state.name};
+    console.log(typeof(JSON.stringify(identity)));
+    fetch('http://localhost:3001/token', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(identity),
+      // mode: 'no-cors'
+    })
+    .then((data) => console.log(data.json()))
+    .catch(err => console.log(err));
+    // const myToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzg1MThiMDA1ZDQ2NzBjZTkxYzVmNjYyYjU1ZTA3MzdiLTE1OTc3OTkyOTUiLCJncmFudHMiOnsiaWRlbnRpdHkiOiJTZWxlY3QiLCJjaGF0Ijp7InNlcnZpY2Vfc2lkIjoiSVM2YzVjZGJhYmQ4ODI0ZTA1YmViNTA5ZTVjNTc4NjM2ZCJ9fSwiaWF0IjoxNTk3Nzk5Mjk1LCJleHAiOjE1OTc4MDI4OTUsImlzcyI6IlNLODUxOGIwMDVkNDY3MGNlOTFjNWY2NjJiNTVlMDczN2IiLCJzdWIiOiJBQzhlNjkxOTliZTQ2Yjk2YjdlYzBhNmZmMjYzYzVmZmM0In0.bbyfECn1qRQ0tNcpjJ4YRLXDFcx_G3O9ihncr6Tfurg';
+    // console.log(this.state.name + " Ramkisson");
+    // this.setState({token: myToken}, this.initChat);
   };
 
   initChat = async () => {

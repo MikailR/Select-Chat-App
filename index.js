@@ -3,6 +3,7 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const twilio     = require('twilio');
 const ngrok      = require('ngrok');
+const identities = require('./identities');
 //Express Async Handler
 const ash = require("express-async-handler");
 //Require and Configure Mailchimp API
@@ -13,11 +14,19 @@ mailchimp.setConfig({
 });
 
 const app = new express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-app.post('/token/:identity', (request, response) => {
-  const identity = request.params.identity;
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(bodyParser.json());
+
+app.post('/token', (request, response) => {
+  console.log("Entered request");
+  // console.log(request.body);
+  let name = {};
+  for (x in request.body){ //This gets the name from the server response.
+    name = JSON.parse(x).name;
+  }
+  console.log(name);
+  const identity = name;
   const accessToken = new twilio.jwt.AccessToken(config.twilio.accountSid, config.twilio.apiKey, config.twilio.apiSecret);
   const chatGrant = new twilio.jwt.AccessToken.ChatGrant({
     serviceSid: config.twilio.chatServiceSid,
