@@ -17,27 +17,45 @@ const app = new express();
 
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+  res.append('Access-Control-Allow-Origin', ['*']);
+  res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.append('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 
 app.post('/token', (request, response) => {
   console.log("Entered request");
   // console.log(request.body);
   let name = {};
+  let valid_identity = false;
   for (x in request.body){ //This gets the name from the server response.
     name = JSON.parse(x).name;
   }
   console.log(name);
-  const identity = name;
-  const accessToken = new twilio.jwt.AccessToken(config.twilio.accountSid, config.twilio.apiKey, config.twilio.apiSecret);
-  const chatGrant = new twilio.jwt.AccessToken.ChatGrant({
+  //Authenticate - See if an Identity exists
+  for (i in identities.realtors){
+    if(identities.realtors[i].identity === name){
+      valid_identity = true;
+    }
+  }
+  // console.log(valid_identity);
+  if(valid_identity){
+    const identity = name;
+    const accessToken = new twilio.jwt.AccessToken(config.twilio.accountSid, config.twilio.apiKey, config.twilio.apiSecret);
+    const chatGrant = new twilio.jwt.AccessToken.ChatGrant({
     serviceSid: config.twilio.chatServiceSid,
-  });
-  accessToken.addGrant(chatGrant);
-  accessToken.identity = identity;
-  response.set('Content-Type', 'application/json');
-  response.send(JSON.stringify({
-    token: accessToken.toJwt(),
-    identity: identity
-  }));
+    });
+    accessToken.addGrant(chatGrant);
+    accessToken.identity = identity;
+    response.set('Content-Type', 'application/json');
+    response.send(JSON.stringify({
+      token: accessToken.toJwt(),
+      identity: identity
+    }));
+  } else {
+    response.send(JSON.stringify("Error: Not a valid Identity!"));
+  }
 })
 
 app.listen(config.port, () => {
@@ -89,6 +107,15 @@ app.post('/mailchimp', ash(async (req, res) => {
     return result.name;
   } 
   let audience = await getListName();
+  let realtor = { //Create Realtor object with proper audience name
+    identity: 'Test',
+    audience: audience
+  };
+  for (x in identities.realtors){ // Assign proper identity for realtor
+    if(identities.realtors[x].audience === audience){
+      realtor.identity = identities.realtors[x].identity;      
+    }
+  };
   // Get a list of active Twilio numbers to create conversation
   const getPhoneNums = async () => {
     result = await client.incomingPhoneNumbers.list();
@@ -103,7 +130,7 @@ app.post('/mailchimp', ash(async (req, res) => {
     });
     return ph_nums;
   }
-  //Return matching Twilio number (proxybindingaddress)
+  // Return matching Twilio number (proxybindingaddress)
   let subscriber = await getPhoneNums();
   console.log(subscriber[0].number);
   // Create Conversation
@@ -121,25 +148,32 @@ app.post('/mailchimp', ash(async (req, res) => {
               'messagingBinding.address': `${req.body.data.merges.PHONE}`,
               'messagingBinding.proxyAddress': `${subscriber[0].number}`
             })
-          //Add "Select" Identity
+          //Add Identities
           .then(participant => {
             console.log(participant);
-            client.conversations.conversations(conversation.sid).participants
-            .create({
-              identity: me
-            })
-            //Send 1st Message
-            .then(participant => {
-              console.log(`Added ${participant.identity} to ${conversation.sid}.`);
-              client.conversations.conversations(conversation.sid)
-                    .messages
-                    .create({author: me, body: 'Hey, this is a test message'})
-                    .then(message => console.log(message.sid))
-                    .catch(e => console.log(e));
-            })
-            .catch(err => console.error(`Failed to add a member to ${req.body.ConversationSid}!`, err));
+            let people = {
+              admin: identities.realtors.select.identity,
+              agent: realtor.identity
+            };
+            for (x in people) {
+              client.conversations.conversations(conversation.sid).participants
+              .create({
+                identity: people[x]
+              })
+              console.log(`Added ${people[x]} to ${conversation.sid}.`);
+            }
           })
-          .catch(e => console.log(e));
+          .then(() => {
+            client.conversations.conversations(conversation.sid)
+            .messages
+            .create({
+              author: identities.realtors.select.identity, 
+              body: 'Ahoy there!'
+            })
+            .then(message => console.log(message.sid))
+            .catch(err => console.log(err));
+          })
+          .catch(err => console.log(`Error: Failed to add ${realtor.audience} to ${conversation.sid}. Message: ${err}`));
       });
   res.sendStatus(200);
 }))

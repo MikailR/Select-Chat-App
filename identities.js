@@ -1,10 +1,28 @@
 module.exports = {
-    identities: {
-        steve: 'Steve Basra',
-        select: 'select realty marketing',
-        ashton: 'Team Ekbatani',
-        witty: 'Team Witty',
-        sophia: 'Sophia Georgiou Real Estate'
-
+    realtors: {
+        steve: {
+            identity: 'Steve',
+            audience: 'Steve Basra'
+        },
+        select: {
+            identity: 'Select',
+            audience: 'select realty marketing'
+        },
+        ashton: {
+            identity: 'Ashton',
+            audience: 'Team Ekbatani'
+        },
+        witty: {
+            identity: 'Witty',
+            audience: 'Team Witty'
+        },
+        sophia: {
+            identity: 'Sophia',
+            audience: 'Sophia Georgiou Real Estate'
+        },
+        margaret: {
+            identity: 'Margaret',
+            audience: ''
+        }
     }
 }
