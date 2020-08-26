@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const twilio     = require('twilio');
 const ngrok      = require('ngrok');
 const identities = require('./identities');
+const path = require('path');
 //Express Async Handler
 const ash = require("express-async-handler");
 //Require and Configure Mailchimp API
@@ -23,6 +24,13 @@ app.use((req, res, next) => {
   res.append('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
+
+if(process.env.NODE_ENV === 'production'){
+  app.use(express.static('src/build'));
+  app.get('*', (req, res) =>{
+    res.sendFile(path.resolve(__dirname, 'src', 'build', 'index.js'));
+  });
+}
 
 app.post('/token', (request, response) => {
   console.log("Entered request");
@@ -58,9 +66,12 @@ app.post('/token', (request, response) => {
   }
 })
 
-app.listen(config.port, () => {
-  console.log(`Application started at localhost:${config.port}`);
+app.listen(process.env.PORT || 3000, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
+// app.listen(config.port, () => {
+//   console.log(`Application started at localhost:${config.port}`);
+// });
 
 
 // ============================================
@@ -90,6 +101,10 @@ app.post('/chat', (req, res) => {
 app.post('/outbound-status', (req, res) => {
   console.log(`Message ${req.body.SmsSid} to ${req.body.To} is ${req.body.MessageStatus}`);
   res.sendStatus(200);
+})
+
+app.get('/', (req, res) => {
+  res.send("Babolal Ram");
 })
 
 app.get('/mailchimp', (req, res) => {
