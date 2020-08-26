@@ -62,9 +62,14 @@ app.post('/token', (request, response) => {
 if(process.env.NODE_ENV === 'production'){
   app.use(express.static('./build'));
   app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'build', 'index.js'));
-  })
+    res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+  });
 }
+
+// app.get('/', (req, res) => {
+//   console.log(path.resolve(__dirname, 'build', 'index.js'));
+//   res.sendFile(path.resolve(__dirname, 'build', 'index.js'));
+// });
 
 app.listen(config.port, () => {
   console.log(`Application started at localhost:${config.port}`);
