@@ -62,7 +62,7 @@ app.post('/token', (request, response) => {
 if(process.env.NODE_ENV === 'production'){
   app.use(express.static('src/build'));
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'src', 'build', 'index.js'));
+    res.sendFile(path.resolve(__dirname, 'build', 'index.js'));
   })
 }
 
