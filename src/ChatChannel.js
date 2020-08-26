@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './assets/Chat.css';
-import MessageBubble from './MessageBubble'
+// import MessageBubble from './MessageBubble'
 import Dropzone from 'react-dropzone';
 import styles from './assets/ChatChannel.module.css'
 import {Button, Form, Icon, Input} from "antd";

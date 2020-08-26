@@ -168,7 +168,7 @@ app.post('/mailchimp', ash(async (req, res) => {
             .messages
             .create({
               author: identities.realtors.select.identity, 
-              body: 'Ahoy there!'
+              body: `Hey ${req.body.data.merges.FNAME}... ${realtor.identity} here. We're putting together that special list of homes for you right now. How many beds and baths were you looking for?`
             })
             .then(message => console.log(message.sid))
             .catch(err => console.log(err));
