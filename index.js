@@ -71,8 +71,11 @@ if(process.env.NODE_ENV === 'production'){
 //   res.sendFile(path.resolve(__dirname, 'build', 'index.js'));
 // });
 
-app.listen(config.port, () => {
-  console.log(`Application started at localhost:${config.port}`);
+// app.listen(config.port, () => {
+//   console.log(`Application started at localhost:${config.port}`);
+// });
+app.listen(process.env.PORT || 3000, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
 
 
