@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const twilio     = require('twilio');
 const ngrok      = require('ngrok');
 const identities = require('./identities');
+const path       = require('path');
 //Express Async Handler
 const ash = require("express-async-handler");
 //Require and Configure Mailchimp API
@@ -57,6 +58,13 @@ app.post('/token', (request, response) => {
     response.send(JSON.stringify("Error: Not a valid Identity!"));
   }
 })
+
+if(process.env.NODE_ENV === 'production'){
+  app.use(express.static('src/build'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'src', 'build', 'index.js'));
+  })
+}
 
 app.listen(config.port, () => {
   console.log(`Application started at localhost:${config.port}`);
