@@ -5,6 +5,7 @@ const twilio     = require('twilio');
 const ngrok      = require('ngrok');
 const identities = require('./identities');
 const path       = require('path');
+const expressStaticGzip = require("express-static-gzip");
 //Express Async Handler
 const ash = require("express-async-handler");
 //Require and Configure Mailchimp API
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
   res.append('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
+
 
 app.post('/token', (request, response) => {
   console.log("Entered request");
@@ -59,8 +61,18 @@ app.post('/token', (request, response) => {
   }
 })
 
+// const gzipOptions = {
+//   enableBrotli: true,
+//   customCompressions: [{
+//   encodingName: 'deflate',
+//   fileExtension: 'zz'
+//  }],
+//  orderPreference: ['br']
+// }
+
 if(process.env.NODE_ENV === 'production'){
-  app.use(express.static('./build'));
+  // app.use(url, expressStaticGzip(dir, gzipOptions));
+  app.use(express.static(__dirname + './build'));
   app.get('/', (req, res) => {
     console.log("This works!");
     res.sendFile(path.resolve(__dirname, 'build', 'index.html'));

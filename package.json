@@ -11,6 +11,7 @@
     "antd": "^3.20.7",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
+    "express-static-gzip": "^2.0.7",
     "http-proxy-middleware": "^1.0.5",
     "mailchimp": "^1.2.1",
     "ngrok": "^3.2.7",
