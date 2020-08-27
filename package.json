@@ -2,6 +2,7 @@
   "name": "conversations-demo",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://select-chat-app.herokuapp.com/",
   "engines": {
     "node": "12.x"
   },
