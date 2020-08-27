@@ -47,7 +47,7 @@
     "not op_mini all"
   ],
   "description": "This is a lightweight application based on [Twilio Chat](https://www.twilio.com/docs/chat).",
-  "main": "index.js",
+  "main": "../index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MikailR/Select-Chat-App.git"
