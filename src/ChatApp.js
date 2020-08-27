@@ -87,7 +87,7 @@ class ChatApp extends React.Component {
       } else {console.log("Error: Invalid Identity!")}
     })
     .catch(err => {
-      console.err(err);
+      console.error(err);
       console.log("Invalid Identity!");
     });
   };
