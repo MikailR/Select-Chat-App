@@ -1,1 +1,1 @@
-web: node index.js
+web: concurrently \"react-scripts start\" \"node index.js\
