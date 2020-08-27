@@ -1,1 +1,1 @@
-web: react-scripts start && node index.js
+web: npm run build && node index.js
