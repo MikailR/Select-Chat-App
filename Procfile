@@ -1,1 +1,1 @@
-web: react-scripts start && node index.js
+web: NPM_ENV=production react-scripts start && node index.js
