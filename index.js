@@ -67,8 +67,8 @@ if(process.env.NODE_ENV === 'production'){
 }
 
 app.get('/', (req, res) => {
-  console.log(path.resolve(__dirname, 'build', 'index.js'));
-  res.sendFile(path.resolve(__dirname, 'build', 'index.js'));
+  console.log(path.resolve(__dirname, 'build', 'index.html'));
+  res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
 });
 
 // app.listen(config.port, () => {
